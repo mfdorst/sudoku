@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 class Cell:
     def __init__(self, value=None, possibilities=[]):
         self.value = value
@@ -9,7 +10,6 @@ class Cell:
 class Board:
     def __init__(self):
         self.cells = [[Cell() for _ in range(9)] for _ in range(9)]
-
 
     def print(self):
         separators = [
@@ -22,7 +22,8 @@ class Board:
             if row_i % 3 == 0:
                 print(separators[row_i // 3])
             else:
-                print('┠─────────┼─────────┼─────────╂─────────┼─────────┼─────────╂─────────┼─────────┼─────────┨')
+                print(
+                    '┠─────────┼─────────┼─────────╂─────────┼─────────┼─────────╂─────────┼─────────┼─────────┨')
             for cell_row in range(3):
                 print('┃  ', end='')
                 for cell_i, cell in enumerate(row):
@@ -38,9 +39,24 @@ class Board:
                     else:
                         print(' │  ', end='')
 
-
         print('┗━━━━━━━━━┷━━━━━━━━━┷━━━━━━━━━┻━━━━━━━━━┷━━━━━━━━━┷━━━━━━━━━┻━━━━━━━━━┷━━━━━━━━━┷━━━━━━━━━┛')
+
+    def load(self, board):
+        """Loads a sudoku board from a 2D array of numbers. Empty spaces should be represented by None."""
+        for from_row, to_row in zip(board, self.cells):
+            for from_cell, to_cell in zip(from_row, to_row):
+                to_cell.value = from_cell
 
 
 board = Board()
+board.load([
+    [1, 2, 3, None, None, 6, 7, None, None],
+    [None, 1, 2, 3, None, None, 6, 7, None],
+    [None, None, 1, 2, 3, None, None, 6, 7],
+    [7, None, None, 1, 2, 3, None, None, 6],
+    [6, 7, None, None, 1, 2, 3, None, None],
+    [None, 6, 7, None, None, 1, 2, 3, None],
+    [3, None, None, 6, 7, None, None, 1, 2],
+    [2, 3, None, None, 6, 7, None, None, 1],
+])
 board.print()
