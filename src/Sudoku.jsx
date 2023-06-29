@@ -9,9 +9,14 @@ function Sudoku() {
         id: nanoid(),
         row: Array(9)
           .fill()
-          .map(() => ({ id: nanoid(), val: " " })),
+          .map(() => ({ id: nanoid(), val: " ", selected: false })),
       }))
   );
+  const [selectedCell, setSelectedCell] = useState({
+    id: null,
+    row: null,
+    col: null,
+  });
 
   // Fetch a board after page load
   useEffect(() => {
@@ -25,22 +30,61 @@ function Sudoku() {
         gridData.map(({ id, row }, i) => ({
           id,
           row: row
-            .map(({ id }, j) => ({
-              id,
+            .map((cell, j) => ({
+              ...cell,
               val: data[i][j],
             }))
-            .map(({ id, val }) => ({ id, val: val === 0 ? " " : `${val}` })),
+            .map((cell) => ({
+              ...cell,
+              val: cell.val === 0 ? " " : `${cell.val}`,
+            })),
         }))
       );
     })();
   }, []);
 
+  function selectCell(id, row, col) {
+    setSelectedCell({ id, row, col });
+  }
+
+  useEffect(
+    () =>
+      setGridData((gridData) =>
+        gridData.map(({ row, ...rowData }, rowIdx) => ({
+          ...rowData,
+          row: row.map((cell, colIdx) => {
+            const selectedRow = selectedCell.row === rowIdx;
+            const selectedCol = selectedCell.col === colIdx;
+            const selected = selectedRow && selectedCol;
+            return {
+              ...cell,
+              selectedRow,
+              selectedCol,
+              selected,
+            };
+          }),
+        }))
+      ),
+    [selectedCell]
+  );
+
   // Convert board data into table data elements
-  const gridElements = gridData.map(({ id, row }) => (
+  const gridElements = gridData.map(({ id, row }, rowIdx) => (
     <tr key={id}>
-      {row.map(({ id, val }) => (
-        <td key={id}>{val}</td>
-      ))}
+      {row.map(({ id, val, selected, selectedRow, selectedCol }, colIdx) => {
+        const selectedClass = selected ? "selected" : "";
+        const selectedRowClass = selectedRow ? "selected-row" : "";
+        const selectedColClass = selectedCol ? "selected-col" : "";
+        return (
+          <td
+            key={id}
+            className={`${selectedClass} ${selectedRowClass} ${selectedColClass}`}
+            onClick={() => selectCell(id, rowIdx, colIdx)}
+          >
+            {val}
+          </td>
+        );
+      })}
     </tr>
   ));
 
