@@ -13,16 +13,7 @@ function Sudoku() {
       }))
   );
 
-  console.log(gridData);
-
-  const gridElements = gridData.map(({ id, row }) => (
-    <tr key={id}>
-      {row.map(({ id, val }) => (
-        <td key={id}>{val}</td>
-      ))}
-    </tr>
-  ));
-
+  // Fetch a board after page load
   useEffect(() => {
     (async () => {
       const res = await fetch(
@@ -43,6 +34,15 @@ function Sudoku() {
       );
     })();
   }, []);
+
+  // Convert board data into table data elements
+  const gridElements = gridData.map(({ id, row }) => (
+    <tr key={id}>
+      {row.map(({ id, val }) => (
+        <td key={id}>{val}</td>
+      ))}
+    </tr>
+  ));
 
   return (
     <>
