@@ -8,9 +8,14 @@ body {
 .sudoku {
   background-color: #f3f3f3;
   border-radius: 10px;
+  font-size: 24px;
 
   width: 300px;
   height: 300px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 @media (min-width: 700px) {
   .sudoku {
@@ -23,4 +28,21 @@ body {
     width: 800px;
     height: 800px;
   }
+}
+
+table {
+  border-collapse: collapse;
+  width: 30em;
+  height: 30em;
+}
+colgroup,
+tbody {
+  border: solid medium;
+}
+td {
+  border: solid thin;
+  height: 1.4em;
+  width: 1.4em;
+  text-align: center;
+  padding: 0;
 }
