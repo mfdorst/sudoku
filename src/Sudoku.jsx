@@ -72,7 +72,7 @@ function Sudoku() {
   useEffect(() => {
     const listener = (e) => {
       const isDelete = e.key === "Backspace" || e.key === "Delete";
-      const isNumber = /^[0-9]$/i.test(e.key);
+      const isNumber = /^[1-9]$/i.test(e.key);
       if ((!isDelete && !isNumber) || selectedCell.id === null) {
         return;
       }
