@@ -68,6 +68,25 @@ function Sudoku() {
     [selectedCell]
   );
 
+  useEffect(() => {
+    const listener = (e) => {
+      const isDelete = e.key === "Backspace" || e.key === "Delete";
+      const isNumber = /^[0-9]$/i.test(e.key);
+      if ((!isDelete && !isNumber) || selectedCell.id === null) {
+        return;
+      }
+      const val = isDelete ? " " : e.key;
+      setGridData((gridData) =>
+        gridData.map(({ row, ...rowData }) => ({
+          ...rowData,
+          row: row.map((cell) => (cell.selected ? { ...cell, val } : cell)),
+        }))
+      );
+    };
+    document.addEventListener("keyup", listener);
+    return () => document.removeEventListener("keyup", listener);
+  }, [selectedCell]);
+
   // Convert board data into table data elements
   const gridElements = gridData.map(({ id, row }, rowIdx) => (
     <tr key={id}>
