@@ -34,10 +34,11 @@ function Sudoku() {
               ...cell,
               val: data[i][j],
             }))
-            .map((cell) => ({
-              ...cell,
-              val: cell.val === 0 ? " " : `${cell.val}`,
-            })),
+            .map((cell) =>
+              cell.val === 0
+                ? { ...cell, val: " ", permanent: false }
+                : { ...cell, val: `${cell.val}`, permanent: true }
+            ),
         }))
       );
     })();
@@ -90,20 +91,26 @@ function Sudoku() {
   // Convert board data into table data elements
   const gridElements = gridData.map(({ id, row }, rowIdx) => (
     <tr key={id}>
-      {row.map(({ id, val, selected, selectedRow, selectedCol }, colIdx) => {
-        const selectedClass = selected ? "selected" : "";
-        const selectedRowClass = selectedRow ? "selected-row" : "";
-        const selectedColClass = selectedCol ? "selected-col" : "";
-        return (
-          <td
-            key={id}
-            className={`${selectedClass} ${selectedRowClass} ${selectedColClass}`}
-            onClick={() => selectCell(id, rowIdx, colIdx)}
-          >
-            {val}
-          </td>
-        );
-      })}
+      {row.map(
+        (
+          { id, val, selected, selectedRow, selectedCol, permanent },
+          colIdx
+        ) => {
+          const selectedClass = selected ? "selected" : "";
+          const selectedRowClass = selectedRow ? "selected-row" : "";
+          const selectedColClass = selectedCol ? "selected-col" : "";
+          const permanentClass = permanent ? "permanent" : "";
+          return (
+            <td
+              key={id}
+              className={`${selectedClass} ${selectedRowClass} ${selectedColClass} ${permanentClass}`}
+              onClick={() => selectCell(id, rowIdx, colIdx)}
+            >
+              {val}
+            </td>
+          );
+        }
+      )}
     </tr>
   ));
 

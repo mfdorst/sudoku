@@ -3,6 +3,8 @@
   --sudoku-bg-color: #f3f3f3;
   --selected-cell-color: #af9beb;
   --selected-row-col-color: #ddd1ff;
+  --permanent-num-color: black;
+  --non-permanent-num-color: #764eed;
 }
 
 body {
@@ -47,6 +49,7 @@ tbody {
   border: solid medium;
 }
 td {
+  color: var(--non-permanent-num-color);
   border: solid thin;
   height: 1.4em;
   width: 1.4em;
@@ -59,4 +62,7 @@ td {
 }
 .selected {
   background-color: var(--selected-cell-color);
+}
+.permanent {
+  color: var(--permanent-num-color);
 }
