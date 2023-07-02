@@ -18,10 +18,16 @@ body {
   align-items: center;
 }
 
+h1 {
+  color: white;
+  text-align: center;
+  margin: 10px;
+}
+
 .sudoku {
   background-color: var(--sudoku-bg-color);
   border-radius: 10px;
-  font-size: 24px;
+  font-size: 9px;
 
   width: 300px;
   height: 300px;
@@ -32,12 +38,14 @@ body {
 }
 @media (min-width: 700px) {
   .sudoku {
+    font-size: 18px;
     width: 600px;
     height: 600px;
   }
 }
 @media (min-width: 900px) {
   .sudoku {
+    font-size: 24px;
     width: 800px;
     height: 800px;
   }
