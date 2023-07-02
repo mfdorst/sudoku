@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 
 function Sudoku() {
+  const savedGrid = JSON.parse(localStorage.getItem("sudoku"));
+
+  // Initialize grid to saved state with empty grid as fallback
   const [gridData, setGridData] = useState(
+    savedGrid ||
     Array(9)
       .fill()
       .map(() => ({
@@ -18,8 +22,20 @@ function Sudoku() {
     col: null,
   });
 
+  // Save grid locally on every change
+  useEffect(() => {
+    localStorage.setItem("sudoku", JSON.stringify(gridData));
+  }, [gridData]);
+
+  function selectCell(id, row, col) {
+    setSelectedCell({ id, row, col });
+  }
+
   // Fetch a board after page load
   useEffect(() => {
+    if (savedGrid !== null) {
+      return;
+    }
     (async () => {
       const res = await fetch(
         "https://sudoku-api.vercel.app/api/dosuku?query={newboard(limit:1){grids{value}}}"
@@ -42,12 +58,9 @@ function Sudoku() {
         }))
       );
     })();
-  }, []);
+  }, [savedGrid]);
 
-  function selectCell(id, row, col) {
-    setSelectedCell({ id, row, col });
-  }
-
+  // Keep selected rows/columns up to date
   useEffect(
     () =>
       setGridData((gridData) =>
@@ -69,6 +82,7 @@ function Sudoku() {
     [selectedCell]
   );
 
+  // Register event listener for keystrokes
   useEffect(() => {
     const listener = (e) => {
       const isDelete = e.key === "Backspace" || e.key === "Delete";
