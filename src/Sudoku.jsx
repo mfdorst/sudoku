@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { nanoid } from "nanoid";
+import { isBoardCorrect } from "./game_logic";
 
 function Sudoku({ newGameRequested, setNewGameRequested }) {
   const savedGrid = JSON.parse(localStorage.getItem("sudoku"));
@@ -45,6 +46,12 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
       }))
     );
   }
+
+  useEffect(() => {
+    if (isBoardCorrect(gridData.map(({ row }) => row.map(({ val }) => val)))) {
+      console.log("You won!");
+    }
+  }, [gridData]);
 
   // Save grid locally on every change
   useEffect(() => {
