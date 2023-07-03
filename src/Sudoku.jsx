@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { nanoid } from "nanoid";
 
-function Sudoku() {
+function Sudoku({ newGameRequested, setNewGameRequested }) {
   const savedGrid = JSON.parse(localStorage.getItem("sudoku"));
 
   // Initialize grid to saved state with empty grid as fallback
@@ -22,6 +23,29 @@ function Sudoku() {
     col: null,
   });
 
+  async function fetchNewBoard() {
+    const res = await fetch(
+      "https://sudoku-api.vercel.app/api/dosuku?query={newboard(limit:1){grids{value}}}"
+    );
+    let data = await res.json();
+    data = data.newboard.grids[0].value;
+    setGridData((gridData) =>
+      gridData.map(({ id, row }, i) => ({
+        id,
+        row: row
+          .map((cell, j) => ({
+            ...cell,
+            val: data[i][j],
+          }))
+          .map((cell) =>
+            cell.val === 0
+              ? { ...cell, val: " ", permanent: false }
+              : { ...cell, val: `${cell.val}`, permanent: true }
+          ),
+      }))
+    );
+  }
+
   // Save grid locally on every change
   useEffect(() => {
     localStorage.setItem("sudoku", JSON.stringify(gridData));
@@ -33,32 +57,18 @@ function Sudoku() {
 
   // Fetch a board after page load
   useEffect(() => {
-    if (savedGrid !== null) {
-      return;
+    if (savedGrid === null) {
+      fetchNewBoard();
     }
-    (async () => {
-      const res = await fetch(
-        "https://sudoku-api.vercel.app/api/dosuku?query={newboard(limit:1){grids{value}}}"
-      );
-      let data = await res.json();
-      data = data.newboard.grids[0].value;
-      setGridData((gridData) =>
-        gridData.map(({ id, row }, i) => ({
-          id,
-          row: row
-            .map((cell, j) => ({
-              ...cell,
-              val: data[i][j],
-            }))
-            .map((cell) =>
-              cell.val === 0
-                ? { ...cell, val: " ", permanent: false }
-                : { ...cell, val: `${cell.val}`, permanent: true }
-            ),
-        }))
-      );
-    })();
   }, [savedGrid]);
+
+  // Fetch new board when new game is requested
+  useEffect(() => {
+    if (newGameRequested) {
+      fetchNewBoard();
+    }
+    setNewGameRequested(false);
+  }, [newGameRequested, setNewGameRequested]);
 
   // Keep selected rows/columns up to date
   useEffect(
@@ -155,5 +165,10 @@ function Sudoku() {
     </>
   );
 }
+
+Sudoku.propTypes = {
+  newGameRequested: PropTypes.bool,
+  setNewGameRequested: PropTypes.func,
+};
 
 export default Sudoku;

@@ -9,18 +9,36 @@
   --non-permanent-num-color: #764eed;
 }
 
+html,
 body {
+  height: 100%;
+}
+
+#root {
   background-color: var(--page-bg-color);
   font-family: "Inter", sans-serif;
+  font-size: 12px;
+
+  height: 100%;
 
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
+@media (min-width: 700px) {
+  #root {
+    font-size: 16px;
+  }
+}
+@media (min-width: 900px) {
+  #root {
+    font-size: 18px;
+  }
+}
 
-h1 {
+.heading {
   color: white;
-  text-align: center;
   margin: 10px;
 }
 
@@ -77,4 +95,13 @@ td {
 }
 .permanent {
   color: var(--permanent-num-color);
+}
+
+.button {
+  margin: 10px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+
+  padding: 5px 10px;
 }
