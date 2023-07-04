@@ -108,7 +108,8 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
   // Register event listener for keystrokes
   useEffect(() => {
     const listener = (e) => {
-      const isDelete = e.key === "Backspace" || e.key === "Delete";
+      const isDelete =
+        e.key === "Backspace" || e.key === "Delete" || e.key === "0";
       const isNumber = /^[1-9]$/i.test(e.key);
       if ((!isDelete && !isNumber) || selectedCell.id === null) {
         return;
