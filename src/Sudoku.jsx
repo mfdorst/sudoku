@@ -92,7 +92,9 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
               !selectedPrimary &&
               (selectedCell.row === rowIdx || selectedCell.col === colIdx);
             const selectedTertiary =
-              !selectedPrimary && selectedCell.val === cell.val;
+              !selectedPrimary &&
+              selectedCell.val === cell.val &&
+              selectedCell.val !== " ";
             return {
               ...cell,
               selectedPrimary,
