@@ -119,7 +119,7 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
         gridData.map(({ row, ...rowData }) => ({
           ...rowData,
           row: row.map((cell) =>
-            cell.selectedPrimary ? { ...cell, val } : cell
+            cell.selectedPrimary && !cell.permanent ? { ...cell, val } : cell
           ),
         }))
       );
