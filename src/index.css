@@ -3,8 +3,9 @@
 :root {
   --page-bg-color: #241847;
   --sudoku-bg-color: #f3f3f3;
-  --selected-cell-color: #af9beb;
-  --selected-row-col-color: #ddd1ff;
+  --selected-primary-color: #b6a2f5;
+  --selected-secondary-color: #ddd1ff;
+  --selected-tertiary-color: var(--selected-primary-color);
   --permanent-num-color: black;
   --non-permanent-num-color: #764eed;
 }
@@ -86,12 +87,14 @@ td {
   text-align: center;
   padding: 0;
 }
-.selected-row,
-.selected-col {
-  background-color: var(--selected-row-col-color);
+.selected-secondary {
+  background-color: var(--selected-secondary-color);
 }
-.selected {
-  background-color: var(--selected-cell-color);
+.selected-primary {
+  background-color: var(--selected-primary-color);
+}
+.selected-tertiary {
+  background-color: var(--selected-tertiary-color);
 }
 .permanent {
   color: var(--permanent-num-color);

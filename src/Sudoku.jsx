@@ -22,6 +22,7 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     id: null,
     row: null,
     col: null,
+    val: 0,
   });
 
   async function fetchNewBoard() {
@@ -58,8 +59,8 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     localStorage.setItem("sudoku", JSON.stringify(gridData));
   }, [gridData]);
 
-  function selectCell(id, row, col) {
-    setSelectedCell({ id, row, col });
+  function selectCell(id, row, col, val) {
+    setSelectedCell({ id, row, col, val });
   }
 
   // Fetch a board after page load
@@ -86,12 +87,17 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
           row: row.map((cell, colIdx) => {
             const selectedRow = selectedCell.row === rowIdx;
             const selectedCol = selectedCell.col === colIdx;
-            const selected = selectedRow && selectedCol;
+            const selectedPrimary = selectedRow && selectedCol;
+            const selectedSecondary =
+              !selectedPrimary &&
+              (selectedCell.row === rowIdx || selectedCell.col === colIdx);
+            const selectedTertiary =
+              !selectedPrimary && selectedCell.val === cell.val;
             return {
               ...cell,
-              selectedRow,
-              selectedCol,
-              selected,
+              selectedPrimary,
+              selectedSecondary,
+              selectedTertiary,
             };
           }),
         }))
@@ -111,7 +117,9 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
       setGridData((gridData) =>
         gridData.map(({ row, ...rowData }) => ({
           ...rowData,
-          row: row.map((cell) => (cell.selected ? { ...cell, val } : cell)),
+          row: row.map((cell) =>
+            cell.selectedPrimary ? { ...cell, val } : cell
+          ),
         }))
       );
     };
@@ -124,18 +132,27 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     <tr key={id}>
       {row.map(
         (
-          { id, val, selected, selectedRow, selectedCol, permanent },
+          {
+            id,
+            val,
+            selectedPrimary,
+            selectedSecondary,
+            selectedTertiary,
+            permanent,
+          },
           colIdx
         ) => {
-          const selectedClass = selected ? "selected" : "";
-          const selectedRowClass = selectedRow ? "selected-row" : "";
-          const selectedColClass = selectedCol ? "selected-col" : "";
-          const permanentClass = permanent ? "permanent" : "";
+          const classes = [
+            selectedPrimary ? "selected-primary" : "",
+            selectedSecondary ? "selected-secondary" : "",
+            selectedTertiary ? "selected-tertiary" : "",
+            permanent ? "permanent" : "",
+          ].join(" ");
           return (
             <td
               key={id}
-              className={`${selectedClass} ${selectedRowClass} ${selectedColClass} ${permanentClass}`}
-              onClick={() => selectCell(id, rowIdx, colIdx)}
+              className={classes}
+              onClick={() => selectCell(id, rowIdx, colIdx, val)}
             >
               {val}
             </td>
