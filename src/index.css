@@ -87,13 +87,13 @@ td {
   text-align: center;
   padding: 0;
 }
-.selected-secondary {
-  background-color: var(--selected-secondary-color);
-}
-.selected-primary {
+.selected-cell {
   background-color: var(--selected-primary-color);
 }
-.selected-tertiary {
+.selected-row-col {
+  background-color: var(--selected-secondary-color);
+}
+.selected-number {
   background-color: var(--selected-tertiary-color);
 }
 .permanent {

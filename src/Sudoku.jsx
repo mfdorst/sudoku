@@ -78,35 +78,6 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     setNewGameRequested(false);
   }, [newGameRequested, setNewGameRequested]);
 
-  // Keep selected rows/columns up to date
-  useEffect(
-    () =>
-      setGridData((gridData) =>
-        gridData.map(({ row, ...rowData }, rowIdx) => ({
-          ...rowData,
-          row: row.map((cell, colIdx) => {
-            const selectedRow = selectedCell.row === rowIdx;
-            const selectedCol = selectedCell.col === colIdx;
-            const selectedPrimary = selectedRow && selectedCol;
-            const selectedSecondary =
-              !selectedPrimary &&
-              (selectedCell.row === rowIdx || selectedCell.col === colIdx);
-            const selectedTertiary =
-              !selectedPrimary &&
-              selectedCell.val === cell.val &&
-              selectedCell.val !== " ";
-            return {
-              ...cell,
-              selectedPrimary,
-              selectedSecondary,
-              selectedTertiary,
-            };
-          }),
-        }))
-      ),
-    [selectedCell]
-  );
-
   // Register event listener for keystrokes
   useEffect(() => {
     const listener = (e) => {
@@ -118,50 +89,48 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
       }
       const val = isDelete ? " " : e.key;
       setGridData((gridData) =>
-        gridData.map(({ row, ...rowData }) => ({
+        gridData.map(({ row, ...rowData }, rowIdx) => ({
           ...rowData,
-          row: row.map((cell) =>
-            cell.selectedPrimary && !cell.permanent ? { ...cell, val } : cell
+          row: row.map((cell, colIdx) =>
+            selectedCell.row === rowIdx &&
+              selectedCell.col === colIdx &&
+              !cell.permanent
+              ? { ...cell, val }
+              : cell
           ),
         }))
       );
+      setSelectedCell((selectedCell) => ({ ...selectedCell, val }));
     };
     document.addEventListener("keyup", listener);
     return () => document.removeEventListener("keyup", listener);
   }, [selectedCell]);
 
+  console.log(selectedCell);
+
   // Convert board data into table data elements
   const gridElements = gridData.map(({ id, row }, rowIdx) => (
     <tr key={id}>
-      {row.map(
-        (
-          {
-            id,
-            val,
-            selectedPrimary,
-            selectedSecondary,
-            selectedTertiary,
-            permanent,
-          },
-          colIdx
-        ) => {
-          const classes = [
-            selectedPrimary ? "selected-primary" : "",
-            selectedSecondary ? "selected-secondary" : "",
-            selectedTertiary ? "selected-tertiary" : "",
-            permanent ? "permanent" : "",
-          ].join(" ");
-          return (
-            <td
-              key={id}
-              className={classes}
-              onClick={() => selectCell(id, rowIdx, colIdx, val)}
-            >
-              {val}
-            </td>
-          );
-        }
-      )}
+      {row.map(({ id, val, permanent }, colIdx) => {
+        const classes = [
+          selectedCell.row === rowIdx && selectedCell.col === colIdx
+            ? "selected-cell"
+            : selectedCell.row === rowIdx || selectedCell.col === colIdx
+              ? "selected-row-col"
+              : "",
+          selectedCell.val === val && val !== " " ? "selected-number" : "",
+          permanent ? "permanent" : "",
+        ].join(" ");
+        return (
+          <td
+            key={id}
+            className={classes}
+            onClick={() => selectCell(id, rowIdx, colIdx, val)}
+          >
+            {val}
+          </td>
+        );
+      })}
     </tr>
   ));
 
