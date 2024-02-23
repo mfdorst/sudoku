@@ -8,3 +8,13 @@ export function isBoardCorrect(grid) {
                             .flatMap(row => row.slice(col * 3, col * 3 + 3)))
     ));
 }
+
+export function findErrors(currentBoard, correctBoard) {
+  return currentBoard.flatMap((row, rowIndex) =>
+    row.flatMap((cellValue, colIndex) =>
+      cellValue !== correctBoard[rowIndex][colIndex] && cellValue !== " "
+        ? [{ row: rowIndex, col: colIndex }]
+        : []
+    )
+  );
+}
