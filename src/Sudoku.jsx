@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { nanoid } from "nanoid";
-import { isBoardCorrect } from "./game_logic";
+import { findErrors, isBoardCorrect } from "./game_logic";
 
 function Sudoku({ newGameRequested, setNewGameRequested }) {
   const savedGrid = JSON.parse(localStorage.getItem("sudoku"));
+  const savedSolution = JSON.parse(localStorage.getItem("sudoku-solution"));
 
   // Initialize grid to saved state with empty grid as fallback
   const [gridData, setGridData] = useState(
@@ -18,6 +19,7 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
           .map(() => ({ id: nanoid(), val: " ", selected: false })),
       }))
   );
+  const [solution, setSolution] = useState(savedSolution);
   const [selectedCell, setSelectedCell] = useState({
     id: null,
     row: null,
@@ -25,28 +27,40 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     val: 0,
   });
 
-  async function fetchNewBoard() {
-    const res = await fetch(
-      "https://sudoku-api.vercel.app/api/dosuku?query={newboard(limit:1){grids{value}}}"
-    );
-    let data = await res.json();
-    data = data.newboard.grids[0].value;
-    setGridData((gridData) =>
-      gridData.map(({ id, row }, i) => ({
-        id,
-        row: row
-          .map((cell, j) => ({
-            ...cell,
-            val: data[i][j],
-          }))
-          .map((cell) =>
-            cell.val === 0
-              ? { ...cell, val: " ", permanent: false }
-              : { ...cell, val: `${cell.val}`, permanent: true }
-          ),
-      }))
-    );
-  }
+async function fetchNewBoard() {
+  const res = await fetch(
+    "https://sudoku-api.vercel.app/api/dosuku?query={newboard(limit:1){grids{value,solution}}}"
+  );
+  let data = await res.json();
+  data = data.newboard.grids[0];
+
+  setGridData((gridData) =>
+    gridData.map(({ id, row }, i) => ({
+      id,
+      row: row
+        .map((cell, j) => ({
+          ...cell,
+          val: data.value[i][j],
+        }))
+        .map((cell) =>
+          cell.val === 0
+            ? { ...cell, val: " ", permanent: false }
+            : { ...cell, val: `${cell.val}`, permanent: true }
+        ),
+    }))
+  );
+  const solution = data.solution.map((row) => row.map((val) => val.toString()))
+  setSolution(solution);
+  localStorage.setItem("sudoku-solution", JSON.stringify(solution));
+}
+
+  useEffect(() => {
+    if (solution) {
+    const errors = checkForErrors(gridData.map(({ row }) => row.map(({ val }) => val)), solution);
+      // Do something with the errors, e.g., highlight them on the UI
+      console.log("Errors:", errors);
+    }
+  }, [gridData, solution]);
 
   useEffect(() => {
     if (isBoardCorrect(gridData.map(({ row }) => row.map(({ val }) => val)))) {
@@ -105,8 +119,6 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     document.addEventListener("keyup", listener);
     return () => document.removeEventListener("keyup", listener);
   }, [selectedCell]);
-
-  console.log(selectedCell);
 
   // Convert board data into table data elements
   const gridElements = gridData.map(({ id, row }, rowIdx) => (
