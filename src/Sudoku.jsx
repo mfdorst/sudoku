@@ -26,6 +26,7 @@ function Sudoku({ newGameRequested, setNewGameRequested }) {
     col: null,
     val: 0,
   });
+  const [errors, setErrors] = useState([]);
 
 async function fetchNewBoard() {
   const res = await fetch(
@@ -55,18 +56,17 @@ async function fetchNewBoard() {
 }
 
   useEffect(() => {
-    if (solution) {
-    const errors = checkForErrors(gridData.map(({ row }) => row.map(({ val }) => val)), solution);
-      // Do something with the errors, e.g., highlight them on the UI
-      console.log("Errors:", errors);
-    }
-  }, [gridData, solution]);
-
-  useEffect(() => {
     if (isBoardCorrect(gridData.map(({ row }) => row.map(({ val }) => val)))) {
       console.log("You won!");
     }
-  }, [gridData]);
+    if (solution) {
+      const errors = findErrors(
+         gridData.map(({ row }) => row.map(({ val }) => val)),
+         solution
+      );
+      setErrors(errors);
+    }
+  }, [gridData, solution]);
 
   // Save grid locally on every change
   useEffect(() => {
@@ -132,7 +132,9 @@ async function fetchNewBoard() {
               : "",
           selectedCell.val === val && val !== " " ? "selected-number" : "",
           permanent ? "permanent" : "",
+          errors.some(error => error.row === rowIdx && error.col === colIdx) ? "error" : ""
         ].join(" ");
+
         return (
           <td
             key={id}

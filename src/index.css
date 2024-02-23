@@ -108,3 +108,7 @@ td {
 
   padding: 5px 10px;
 }
+
+.error {
+  background-color: #ffcccc;
+}
