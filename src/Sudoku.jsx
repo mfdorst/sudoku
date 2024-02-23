@@ -95,9 +95,38 @@ async function fetchNewBoard() {
   // Register event listener for keystrokes
   useEffect(() => {
     const listener = (e) => {
-      const isDelete =
-        e.key === "Backspace" || e.key === "Delete" || e.key === "0";
+      const isDelete = e.key === "Backspace" || e.key === "Delete" || e.key === "0";
       const isNumber = /^[1-9]$/i.test(e.key);
+      const isArrowKey = /^Arrow(Up|Down|Left|Right)$/.test(e.key)
+
+      if (isArrowKey && selectedCell.id !== null) {
+        let newRow = selectedCell.row;
+        let newCol = selectedCell.col;
+
+        switch (e.key) {
+          case "ArrowUp":
+            newRow = (selectedCell.row - 1 + 9) % 9;
+            break;
+          case "ArrowDown":
+            newRow = (selectedCell.row + 1) % 9;
+            break;
+          case "ArrowLeft":
+            newCol = (selectedCell.col - 1 + 9) % 9;
+            break;
+          case "ArrowRight":
+            newCol = (selectedCell.col + 1) % 9;
+            break;
+        }
+        // Get the data from the cell we are moving to
+        const cell = gridData[newRow].row[newCol];
+        setSelectedCell(
+        {
+          id: cell.id,
+          row: newRow,
+          col: newCol,
+          val: cell.val,
+        });
+      }
       if ((!isDelete && !isNumber) || selectedCell.id === null) {
         return;
       }
